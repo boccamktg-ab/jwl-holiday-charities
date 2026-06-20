@@ -1,15 +1,35 @@
 'use client'
 
-import { useState } from 'react'
+import { Suspense, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 
-export default function LoginPage() {
-  const router = useRouter()
-  const searchParams = useSearchParams()
-  const notice = searchParams.get('notice')
+function NoticeBanner() {
+  const notice = useSearchParams().get('notice')
+  if (notice === 'pending') return (
+    <div className="mb-5 bg-amber-50 border border-amber-200 rounded-lg px-4 py-3 text-sm text-amber-800">
+      <p className="font-medium mb-1">Whoops!</p>
+      <p>Have you recently registered? Your account may be pending approval. Reach out to{' '}
+        <a href="mailto:info@jwlhuntington.org" className="underline hover:text-amber-900">info@jwlhuntington.org</a>{' '}
+        if this is unexpected.
+      </p>
+    </div>
+  )
+  if (notice === 'disabled') return (
+    <div className="mb-5 bg-red-50 border border-red-200 rounded-lg px-4 py-3 text-sm text-red-800">
+      <p className="font-medium mb-1">Account disabled</p>
+      <p>Your account has been disabled. Please contact{' '}
+        <a href="mailto:info@jwlhuntington.org" className="underline hover:text-red-900">info@jwlhuntington.org</a>{' '}
+        for assistance.
+      </p>
+    </div>
+  )
+  return null
+}
 
+function LoginForm() {
+  const router = useRouter()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
@@ -35,7 +55,6 @@ export default function LoginPage() {
       return
     }
 
-    // Check if JWL member
     const supabase2 = createClient()
     const { data: member } = await supabase2
       .from('jwl_members')
@@ -52,19 +71,6 @@ export default function LoginPage() {
 
   return (
     <>
-      {notice === 'pending' && (
-        <div className="mb-5 bg-amber-50 border border-amber-200 rounded-lg px-4 py-3 text-sm text-amber-800">
-          <p className="font-medium mb-1">Whoops!</p>
-          <p>Have you recently registered? Your account may be pending approval. Reach out to <a href="mailto:info@jwlhuntington.org" className="underline hover:text-amber-900">info@jwlhuntington.org</a> if this is unexpected.</p>
-        </div>
-      )}
-      {notice === 'disabled' && (
-        <div className="mb-5 bg-red-50 border border-red-200 rounded-lg px-4 py-3 text-sm text-red-800">
-          <p className="font-medium mb-1">Account disabled</p>
-          <p>Your account has been disabled. Please contact <a href="mailto:info@jwlhuntington.org" className="underline hover:text-red-900">info@jwlhuntington.org</a> for assistance.</p>
-        </div>
-      )}
-
       <h2 className="text-lg font-medium text-gray-800 mb-6">Sign in</h2>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
@@ -107,6 +113,17 @@ export default function LoginPage() {
         Don&apos;t have an account?{' '}
         <Link href="/register" className="text-[#1B52C1] hover:underline">Register</Link>
       </p>
+    </>
+  )
+}
+
+export default function LoginPage() {
+  return (
+    <>
+      <Suspense>
+        <NoticeBanner />
+      </Suspense>
+      <LoginForm />
     </>
   )
 }
