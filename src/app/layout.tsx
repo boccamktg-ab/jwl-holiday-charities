@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "JWL Holiday Charities",
-  description: "Holiday Charities intake and assignment system for the Junior Welfare League of Huntington.",
+  title: "JWL Portal",
+  description: "Member portal for the Junior Welfare League of Huntington.",
 };
 
 export default function RootLayout({
