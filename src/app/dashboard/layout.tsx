@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import Link from 'next/link'
+import Image from 'next/image'
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const supabase = await createClient()
@@ -17,14 +18,17 @@ export default async function DashboardLayout({ children }: { children: React.Re
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <nav className="bg-white border-b border-gray-200 px-6 py-3 flex items-center justify-between">
-        <span className="font-semibold text-gray-900">JWL Holiday Charities</span>
+      <nav className="bg-[#1B52C1] px-6 py-3 flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <Image src="/jwl-logo.png" alt="JWL" width={36} height={36} className="object-contain brightness-0 invert" />
+          <span className="font-semibold text-white text-sm">Holiday Charities</span>
+        </div>
         <div className="flex items-center gap-6 text-sm">
-          <Link href="/dashboard" className="text-gray-600 hover:text-gray-900">My Families</Link>
-          <Link href="/dashboard/profile" className="text-gray-600 hover:text-gray-900">My Profile</Link>
-          <span className="text-gray-400">{sw.name}</span>
+          <Link href="/dashboard" className="text-blue-100 hover:text-white">My Families</Link>
+          <Link href="/dashboard/profile" className="text-blue-100 hover:text-white">My Profile</Link>
+          <span className="text-blue-200">{sw.name}</span>
           <form action="/api/auth/logout" method="POST">
-            <button className="text-gray-500 hover:text-gray-900">Sign out</button>
+            <button className="text-blue-200 hover:text-white">Sign out</button>
           </form>
         </div>
       </nav>

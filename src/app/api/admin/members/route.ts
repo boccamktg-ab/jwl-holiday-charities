@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient as adminSupabase } from '@supabase/supabase-js'
-import { createServerClient } from '@supabase/ssr'
+import { requireAdminFromRequest } from '@/lib/admin'
 
 function db() {
   return adminSupabase(
@@ -10,24 +10,21 @@ function db() {
   )
 }
 
-async function requireAdmin(request: NextRequest) {
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    { cookies: { getAll: () => request.cookies.getAll(), setAll: () => {} } }
-  )
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user || user.email !== process.env.NEXT_PUBLIC_ADMIN_EMAIL) return null
-  return user
-}
-
 // PATCH — approve / disable / enable a member
 export async function PATCH(request: NextRequest) {
-  if (!await requireAdmin(request)) {
+  if (!await requireAdminFromRequest(request)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 403 })
   }
 
   const { memberId, action } = await request.json()
+  if (action === 'toggle_admin') {
+    const { data: member } = await db().from('jwl_members').select('is_admin').eq('id', memberId).single()
+    if (!member) return NextResponse.json({ error: 'Not found' }, { status: 404 })
+    const { error } = await db().from('jwl_members').update({ is_admin: !member.is_admin }).eq('id', memberId)
+    if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+    return NextResponse.json({ ok: true })
+  }
+
   const statusMap: Record<string, string> = {
     approve: 'approved',
     disable: 'disabled',
@@ -47,7 +44,7 @@ export async function PATCH(request: NextRequest) {
 
 // POST — admin creates a JWL member directly (pre-approved, auto-creates login)
 export async function POST(request: NextRequest) {
-  if (!await requireAdmin(request)) {
+  if (!await requireAdminFromRequest(request)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 403 })
   }
 

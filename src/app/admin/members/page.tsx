@@ -14,7 +14,7 @@ export default async function AdminMembersPage() {
   const { data: members } = await db()
     .from('jwl_members')
     .select(`
-      id, name, email, children_requested, status,
+      id, name, email, children_requested, status, is_admin,
       assignments ( id, assignment_children ( child_id ) )
     `)
     .order('name')
@@ -79,7 +79,7 @@ function MembersTable({ rows, showActions }: { rows: any[]; showActions?: boolea
             <th className="text-center px-4 py-3 text-gray-500 font-medium">Requested</th>
             <th className="text-center px-4 py-3 text-gray-500 font-medium">Assigned</th>
             <th className="text-center px-4 py-3 text-gray-500 font-medium">Status</th>
-            {showActions && <th className="text-right px-4 py-3 text-gray-500 font-medium">Actions</th>}
+            {showActions && <th className="text-right px-4 py-3 text-gray-500 font-medium w-48">Actions</th>}
           </tr>
         </thead>
         <tbody className="divide-y divide-gray-100">
@@ -100,7 +100,7 @@ function MembersTable({ rows, showActions }: { rows: any[]; showActions?: boolea
               </td>
               {showActions && (
                 <td className="px-4 py-3 text-right">
-                  <MemberActions memberId={m.id} status={m.status} />
+                  <MemberActions memberId={m.id} status={m.status} isAdmin={m.is_admin ?? false} />
                 </td>
               )}
             </tr>

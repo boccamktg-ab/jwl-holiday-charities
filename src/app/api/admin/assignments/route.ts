@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient as createServiceClient } from '@supabase/supabase-js'
-import { createServerClient } from '@supabase/ssr'
+import { requireAdminFromRequest } from '@/lib/admin'
 
 function adminClient() {
   return createServiceClient(
@@ -11,13 +11,7 @@ function adminClient() {
 }
 
 export async function POST(request: NextRequest) {
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    { cookies: { getAll: () => request.cookies.getAll(), setAll: () => {} } }
-  )
-  const { data: { user } } = await supabase.auth.getUser()
-  if (user?.email !== process.env.NEXT_PUBLIC_ADMIN_EMAIL) {
+  if (!await requireAdminFromRequest(request)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 403 })
   }
 

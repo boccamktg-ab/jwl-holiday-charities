@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Image from 'next/image'
 import { t, type Lang } from '@/lib/translations'
 
 type Child = {
@@ -105,10 +106,13 @@ export default function FamilyForm({ family }: { family: Family }) {
 
         {/* Header */}
         <div className="flex items-center justify-between pt-4">
-          <h1 className="text-xl font-semibold text-gray-900">{tr.title}</h1>
+          <div className="flex items-center gap-3">
+            <Image src="/jwl-logo.png" alt="JWL" width={48} height={48} className="object-contain" />
+            <h1 className="text-lg font-semibold text-[#1B52C1]">{tr.title}</h1>
+          </div>
           <button
             onClick={() => setLang(l => l === 'en' ? 'es' : 'en')}
-            className="text-sm text-blue-600 hover:underline"
+            className="text-sm text-[#1B52C1] hover:underline"
           >
             {tr.language}
           </button>

@@ -86,7 +86,7 @@ export default function RegisterPage() {
             ? "Your account is pending admin approval. You'll be able to log in once approved."
             : "Your account is pending admin approval. You'll receive access once approved."}
         </p>
-        <Link href="/login" className="text-blue-600 text-sm hover:underline">Back to sign in</Link>
+        <Link href="/login" className="text-[#1B52C1] text-sm hover:underline">Back to sign in</Link>
       </div>
     )
   }
@@ -102,14 +102,14 @@ export default function RegisterPage() {
         <button
           type="button"
           onClick={() => setRole('social_worker')}
-          className={`flex-1 text-sm py-1.5 rounded-md transition-colors ${role === 'social_worker' ? 'bg-blue-600 text-white font-medium' : 'text-gray-600 hover:text-gray-900'}`}
+          className={`flex-1 text-sm py-1.5 rounded-md transition-colors ${role === 'social_worker' ? 'bg-[#1B52C1] text-white font-medium' : 'text-gray-600 hover:text-gray-900'}`}
         >
           Social Worker
         </button>
         <button
           type="button"
           onClick={() => setRole('jwl_member')}
-          className={`flex-1 text-sm py-1.5 rounded-md transition-colors ${role === 'jwl_member' ? 'bg-blue-600 text-white font-medium' : 'text-gray-600 hover:text-gray-900'}`}
+          className={`flex-1 text-sm py-1.5 rounded-md transition-colors ${role === 'jwl_member' ? 'bg-[#1B52C1] text-white font-medium' : 'text-gray-600 hover:text-gray-900'}`}
         >
           JWL Member
         </button>
@@ -119,17 +119,17 @@ export default function RegisterPage() {
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Full name</label>
           <input type="text" required value={name} onChange={e => setName(e.target.value)}
-            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#1B52C1]" />
         </div>
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
           <input type="email" required value={email} onChange={e => setEmail(e.target.value)}
-            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#1B52C1]" />
         </div>
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
           <input type="password" required minLength={8} value={password} onChange={e => setPassword(e.target.value)}
-            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#1B52C1]" />
         </div>
 
         {role === 'social_worker' && (
@@ -137,7 +137,7 @@ export default function RegisterPage() {
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">District</label>
               <select required value={selectedDistrict} onChange={e => handleDistrictChange(e.target.value)}
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#1B52C1]">
                 <option value="">Select a district…</option>
                 {districts.map(d => <option key={d.id} value={d.id}>{d.name}</option>)}
               </select>
@@ -150,7 +150,7 @@ export default function RegisterPage() {
                     <label key={school.id} className="flex items-center gap-2 cursor-pointer">
                       <input type="checkbox" checked={selectedSchools.includes(school.id)}
                         onChange={() => toggleSchool(school.id)}
-                        className="rounded border-gray-300 text-blue-600" />
+                        className="rounded border-gray-300 text-[#1B52C1]" />
                       <span className="text-sm text-gray-700">{school.name}</span>
                     </label>
                   ))}
@@ -167,19 +167,19 @@ export default function RegisterPage() {
             </label>
             <input type="number" min={1} max={100} value={childrenRequested}
               onChange={e => setChildrenRequested(e.target.value)}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#1B52C1]" />
           </div>
         )}
 
         {error && <p className="text-sm text-red-600">{error}</p>}
         <button type="submit" disabled={loading}
-          className="w-full bg-blue-600 text-white rounded-lg px-4 py-2 text-sm font-medium hover:bg-blue-700 disabled:opacity-50">
+          className="w-full bg-[#1B52C1] text-white rounded-lg px-4 py-2 text-sm font-medium hover:bg-[#1540A0] disabled:opacity-50">
           {loading ? 'Submitting…' : 'Register'}
         </button>
       </form>
       <p className="mt-4 text-sm text-center text-gray-500">
         Already have an account?{' '}
-        <Link href="/login" className="text-blue-600 hover:underline">Sign in</Link>
+        <Link href="/login" className="text-[#1B52C1] hover:underline">Sign in</Link>
       </p>
     </>
   )

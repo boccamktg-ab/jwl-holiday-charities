@@ -1,5 +1,6 @@
 import { createClient } from '@supabase/supabase-js'
 import Link from 'next/link'
+import NotificationsList from './NotificationsList'
 
 function adminClient() {
   return createClient(
@@ -17,11 +18,13 @@ export default async function AdminDashboard() {
     { data: children },
     { data: schools },
     { data: pendingMembers },
+    { data: notifications },
   ] = await Promise.all([
     supabase.from('families').select('id, status, school_id, schools(name, districts(name))'),
     supabase.from('children').select('id, family_id, families(status, schools(name, districts(name)))'),
     supabase.from('schools').select('id, name, districts(name)').order('name'),
     supabase.from('jwl_members').select('id, name, email').eq('status', 'pending').order('name'),
+    supabase.from('admin_notifications').select('id, message, created_at').eq('read', false).order('created_at', { ascending: false }),
   ])
 
   const totalFamilies = families?.length ?? 0
@@ -80,6 +83,11 @@ export default async function AdminDashboard() {
             ))}
           </div>
         </div>
+      )}
+
+      {/* Member notifications */}
+      {notifications && notifications.length > 0 && (
+        <NotificationsList notifications={notifications} />
       )}
 
       {/* Quick links */}
