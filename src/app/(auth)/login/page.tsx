@@ -65,7 +65,7 @@ function LoginForm() {
     if (member) {
       router.push(member.is_admin ? '/admin' : '/members/dashboard')
     } else {
-      router.push('/dashboard')
+      router.push('/portal')
     }
   }
 
