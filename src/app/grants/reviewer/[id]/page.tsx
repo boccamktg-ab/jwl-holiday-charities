@@ -116,7 +116,7 @@ export default async function ReviewerApplicationPage({ params }: { params: Prom
 
   const { data: messages } = await db()
     .from('grant_messages')
-    .select('id, body, created_at, author_id')
+    .select('id, body, created_at, author_id, attachment_url, attachment_name')
     .eq('application_id', id)
     .order('created_at', { ascending: true })
 

@@ -17,13 +17,15 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Account not approved' }, { status: 403 })
     }
 
-    const { application_id, body } = await req.json()
+    const formData = await req.formData()
+    const application_id = formData.get('application_id') as string
+    const body = (formData.get('body') as string | null) ?? ''
+    const file = formData.get('file') as File | null
 
-    if (!application_id || !body?.trim()) {
-      return NextResponse.json({ error: 'Missing application_id or body' }, { status: 400 })
+    if (!application_id || (!body.trim() && !file)) {
+      return NextResponse.json({ error: 'Missing application_id or message content' }, { status: 400 })
     }
 
-    // Verify referrer owns this application and it's still active
     const { data: app } = await supabase
       .from('grant_applications')
       .select('id, status')
@@ -37,9 +39,30 @@ export async function POST(req: NextRequest) {
     }
 
     const service = await createServiceClient()
+
+    let attachment_url: string | null = null
+    let attachment_name: string | null = null
+
+    if (file) {
+      const ext = file.name.split('.').pop()
+      const path = `grants/${application_id}/messages/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`
+      const { error: uploadError } = await service.storage
+        .from('grant-documents')
+        .upload(path, file, { contentType: file.type })
+
+      if (uploadError) {
+        console.error(uploadError)
+        return NextResponse.json({ error: 'File upload failed' }, { status: 500 })
+      }
+
+      const { data: urlData } = service.storage.from('grant-documents').getPublicUrl(path)
+      attachment_url = urlData.publicUrl
+      attachment_name = file.name
+    }
+
     const { error } = await service
       .from('grant_messages')
-      .insert({ application_id, author_id: user.id, body: body.trim() })
+      .insert({ application_id, author_id: user.id, body: body.trim(), attachment_url, attachment_name })
 
     if (error) {
       console.error(error)

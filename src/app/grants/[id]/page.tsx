@@ -67,7 +67,7 @@ export default async function GrantApplicationPage({ params }: { params: Promise
 
   const { data: messages } = await supabase
     .from('grant_messages')
-    .select('id, body, created_at, author_id')
+    .select('id, body, created_at, author_id, attachment_url, attachment_name')
     .eq('application_id', id)
     .order('created_at', { ascending: true })
 
