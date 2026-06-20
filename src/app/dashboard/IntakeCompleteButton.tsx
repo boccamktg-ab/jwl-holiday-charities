@@ -9,7 +9,7 @@ export default function IntakeCompleteButton({ intakeComplete }: { intakeComplet
   const [done, setDone] = useState(intakeComplete)
 
   async function toggle() {
-    if (done && !confirm('Mark intake as not complete?')) return
+    if (done && !confirm('Mark intake as not complete? Note: you will need to contact JWL to re-enable family submissions.')) return
     setLoading(true)
     await fetch('/api/dashboard/intake-complete', {
       method: 'POST',
@@ -26,7 +26,7 @@ export default function IntakeCompleteButton({ intakeComplete }: { intakeComplet
       <div className="flex items-center justify-between bg-green-50 border border-green-200 rounded-xl px-4 py-3">
         <div>
           <p className="text-sm font-medium text-green-800">✓ Intake marked complete</p>
-          <p className="text-xs text-green-600">JWL admin has been notified that all families are submitted.</p>
+          <p className="text-xs text-green-600">Family submissions are now closed. Contact JWL if you need to add more.</p>
         </div>
         <button
           onClick={toggle}
@@ -46,7 +46,7 @@ export default function IntakeCompleteButton({ intakeComplete }: { intakeComplet
       className="w-full border border-gray-300 rounded-xl px-4 py-3 text-sm text-gray-600 hover:bg-gray-50 hover:border-gray-400 transition-colors text-left"
     >
       <span className="font-medium">Mark intake complete</span>
-      <span className="text-gray-400 ml-2">— notify JWL that all families have been submitted</span>
+      <span className="text-gray-400 ml-2">— notifies JWL and closes your family submissions</span>
     </button>
   )
 }

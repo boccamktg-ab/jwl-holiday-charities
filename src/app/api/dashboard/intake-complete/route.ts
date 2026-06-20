@@ -20,9 +20,14 @@ export async function POST(request: NextRequest) {
 
   if (!sw) return NextResponse.json({ error: 'Not found' }, { status: 404 })
 
+  // When marking intake complete, automatically disable submissions.
+  // Re-enabling submissions requires admin action so accidental re-opens don't happen.
+  const update: Record<string, unknown> = { intake_complete: complete }
+  if (complete) update.submissions_enabled = false
+
   const { error } = await supabase
     .from('social_workers')
-    .update({ intake_complete: complete })
+    .update(update)
     .eq('id', sw.id)
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
