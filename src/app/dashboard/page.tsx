@@ -60,7 +60,7 @@ export default async function DashboardPage() {
   const submissionsOpen = systemOpen && swEnabled
   const closedMessage = !systemOpen
     ? (settingsMap['submissions_closed_message'] ?? 'Family registration is currently closed.')
-    : 'Your submissions have been temporarily disabled. Please contact the admin.'
+    : null
 
   const cutoff = new Date(Date.now() - 72 * 60 * 60 * 1000).toISOString()
   const overdueCount = (families ?? []).filter(
@@ -81,7 +81,10 @@ export default async function DashboardPage() {
 
       {!submissionsOpen && (
         <div className="bg-blue-50 border border-blue-200 rounded-xl px-4 py-3 text-sm text-[#1B52C1]">
-          {closedMessage}
+          {closedMessage
+            ? closedMessage
+            : <>Your submissions have been closed. To add more families or children, please contact us at <a href="mailto:Info@JWLHuntington.org" className="underline font-medium">Info@JWLHuntington.org</a>.</>
+          }
         </div>
       )}
 
