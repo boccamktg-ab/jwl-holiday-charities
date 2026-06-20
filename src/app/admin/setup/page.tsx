@@ -2,6 +2,7 @@ import { createClient } from '@supabase/supabase-js'
 import AddDistrictForm from './AddDistrictForm'
 import AddSchoolForm from './AddSchoolForm'
 import RemoveSchoolButton from './RemoveSchoolButton'
+import SeasonSettings from './SeasonSettings'
 
 function adminClient() {
   return createClient(
@@ -13,14 +14,22 @@ function adminClient() {
 
 export default async function SetupPage() {
   const supabase = adminClient()
-  const { data: districts } = await supabase
-    .from('districts')
-    .select('id, name, schools(id, name)')
-    .order('name')
+  const [{ data: districts }, { data: settings }] = await Promise.all([
+    supabase.from('districts').select('id, name, schools(id, name)').order('name'),
+    supabase.from('app_settings').select('key, value'),
+  ])
+
+  const settingsMap = Object.fromEntries((settings ?? []).map(s => [s.key, s.value]))
+  const submissionsOpen = settingsMap['submissions_open'] !== 'false'
+  const closedMessage = settingsMap['submissions_closed_message'] ?? 'Family registration is currently closed.'
 
   return (
     <div className="space-y-8 max-w-2xl">
-      <h1 className="text-2xl font-semibold text-gray-900">Districts &amp; Schools</h1>
+      <h1 className="text-2xl font-semibold text-gray-900">Setup</h1>
+
+      <SeasonSettings submissionsOpen={submissionsOpen} closedMessage={closedMessage} />
+
+      <h2 className="text-lg font-semibold text-gray-800">Districts &amp; Schools</h2>
 
       <div className="space-y-6">
         {(districts ?? []).map((district: any) => (

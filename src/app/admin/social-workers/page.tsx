@@ -1,5 +1,6 @@
 import { createClient } from '@supabase/supabase-js'
 import ApprovalActions from './ApprovalActions'
+import SwSubmissionsToggle from './SwSubmissionsToggle'
 
 function adminClient() {
   return createClient(
@@ -16,7 +17,7 @@ export default async function SocialWorkersPage() {
     supabase
       .from('social_workers')
       .select(`
-        id, name, email, status, intake_complete, created_at,
+        id, name, email, status, intake_complete, submissions_enabled, created_at,
         social_worker_schools ( schools ( name, districts ( name ) ) )
       `)
       .order('created_at', { ascending: false }),
@@ -110,7 +111,12 @@ function SocialWorkerCard({ sw, overdueCount, showActions }: { sw: any; overdueC
         <p className="text-sm text-gray-500">{sw.email}</p>
         {schools && <p className="text-xs text-gray-400">{schools}</p>}
       </div>
-      {showActions && <ApprovalActions id={sw.id} />}
+      <div className="flex items-center gap-3 shrink-0">
+        {sw.status === 'approved' && (
+          <SwSubmissionsToggle swId={sw.id} enabled={sw.submissions_enabled ?? true} />
+        )}
+        {showActions && <ApprovalActions id={sw.id} />}
+      </div>
     </div>
   )
 }

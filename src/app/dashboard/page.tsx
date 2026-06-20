@@ -1,8 +1,17 @@
 import { createClient } from '@/lib/supabase/server'
+import { createClient as adminSupabase } from '@supabase/supabase-js'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import IntakeCompleteButton from './IntakeCompleteButton'
 import FamiliesList from './FamiliesList'
+
+function db() {
+  return adminSupabase(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    { auth: { autoRefreshToken: false, persistSession: false } }
+  )
+}
 
 export default async function DashboardPage() {
   const supabase = await createClient()
@@ -31,14 +40,27 @@ export default async function DashboardPage() {
     )
   }
 
-  const { data: families } = await supabase
-    .from('families')
-    .select(`
+  const [
+    { data: families },
+    { data: settings },
+    { data: swFull },
+  ] = await Promise.all([
+    supabase.from('families').select(`
       id, family_number, num_children, status, submitted_at,
       schools ( id, name, district_id, districts ( name ) ),
       children ( id )
-    `)
-    .eq('social_worker_id', sw.id)
+    `).eq('social_worker_id', sw.id),
+    db().from('app_settings').select('key, value'),
+    db().from('social_workers').select('submissions_enabled').eq('id', sw.id).single(),
+  ])
+
+  const settingsMap = Object.fromEntries((settings ?? []).map((s: any) => [s.key, s.value]))
+  const systemOpen = settingsMap['submissions_open'] !== 'false'
+  const swEnabled = swFull?.submissions_enabled ?? true
+  const submissionsOpen = systemOpen && swEnabled
+  const closedMessage = !systemOpen
+    ? (settingsMap['submissions_closed_message'] ?? 'Family registration is currently closed.')
+    : 'Your submissions have been temporarily disabled. Please contact the admin.'
 
   const cutoff = new Date(Date.now() - 72 * 60 * 60 * 1000).toISOString()
   const overdueCount = (families ?? []).filter(
@@ -49,13 +71,19 @@ export default async function DashboardPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-semibold text-gray-900">My Families</h1>
-        <Link
-          href="/dashboard/families/new"
-          className="bg-blue-600 text-white text-sm font-medium px-4 py-2 rounded-lg hover:bg-blue-700"
-        >
-          + Add Family
-        </Link>
+        {submissionsOpen && (
+          <Link href="/dashboard/families/new"
+            className="bg-[#1B52C1] text-white text-sm font-medium px-4 py-2 rounded-lg hover:bg-[#1540A0]">
+            + Add Family
+          </Link>
+        )}
       </div>
+
+      {!submissionsOpen && (
+        <div className="bg-blue-50 border border-blue-200 rounded-xl px-4 py-3 text-sm text-[#1B52C1]">
+          {closedMessage}
+        </div>
+      )}
 
       {overdueCount > 0 && (
         <div className="bg-amber-50 border border-amber-300 rounded-xl px-4 py-3 text-sm text-amber-800">
