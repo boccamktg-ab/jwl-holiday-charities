@@ -43,7 +43,6 @@ export default function LiftFundForm({ referrerId, referrerName, referrerEmail }
       if (!form.crisis_description.trim()) return setError('Description of the financial crisis is required.')
       if (!form.sustainability_statement.trim()) return setError('Proof of financial sustainability is required.')
       if (isNaN(amount) || amount <= 0 || amount > 3000) return setError('Requested amount must be between $1 and $3,000.')
-      if (!fileRef.current?.files?.length) return setError('At least one supporting document is required for the Lift Fund.')
     }
 
     setSaving(true)
@@ -220,8 +219,8 @@ export default function LiftFundForm({ referrerId, referrerName, referrerEmail }
 
       {/* Documents */}
       <section className="space-y-3">
-        <h2 className="text-sm font-semibold text-gray-700 uppercase tracking-wide">Supporting Documents <span className="text-red-500">*</span></h2>
-        <p className="text-xs text-gray-500">Upload financial documentation (pay stubs, bills, bank statements, etc.). PDF or image files accepted. Required for submission.</p>
+        <h2 className="text-sm font-semibold text-gray-700 uppercase tracking-wide">Supporting Documents</h2>
+        <p className="text-xs text-gray-500">Upload financial documentation (pay stubs, bills, bank statements, etc.). PDF or image files accepted. You may also submit documents after the initial application.</p>
         <input
           ref={fileRef}
           type="file"
