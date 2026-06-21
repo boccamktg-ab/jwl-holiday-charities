@@ -1,5 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient, createServiceClient } from '@/lib/supabase/server'
+import { createClient } from '@/lib/supabase/server'
+import { createClient as adminSupabase } from '@supabase/supabase-js'
+
+function db() {
+  return adminSupabase(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    { auth: { autoRefreshToken: false, persistSession: false } }
+  )
+}
 
 export async function POST(req: NextRequest) {
   try {
@@ -38,40 +47,43 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Cannot message on a closed application' }, { status: 400 })
     }
 
-    const service = await createServiceClient()
+    const admin = db()
 
     let attachment_url: string | null = null
     let attachment_name: string | null = null
 
-    if (file) {
+    if (file && file.size > 0) {
       const ext = file.name.split('.').pop()
       const path = `grants/${application_id}/messages/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`
-      const { error: uploadError } = await service.storage
+      const arrayBuffer = await file.arrayBuffer()
+      const buffer = Buffer.from(arrayBuffer)
+
+      const { error: uploadError } = await admin.storage
         .from('grant-documents')
-        .upload(path, file, { contentType: file.type })
+        .upload(path, buffer, { contentType: file.type || 'application/octet-stream' })
 
       if (uploadError) {
-        console.error(uploadError)
-        return NextResponse.json({ error: 'File upload failed' }, { status: 500 })
+        console.error('Storage upload error:', uploadError)
+        return NextResponse.json({ error: `Upload failed: ${uploadError.message}` }, { status: 500 })
       }
 
-      const { data: urlData } = service.storage.from('grant-documents').getPublicUrl(path)
+      const { data: urlData } = admin.storage.from('grant-documents').getPublicUrl(path)
       attachment_url = urlData.publicUrl
       attachment_name = file.name
     }
 
-    const { error } = await service
+    const { error } = await admin
       .from('grant_messages')
       .insert({ application_id, author_id: user.id, body: body.trim(), attachment_url, attachment_name })
 
     if (error) {
-      console.error(error)
-      return NextResponse.json({ error: 'Failed to send message' }, { status: 500 })
+      console.error('Insert error:', error)
+      return NextResponse.json({ error: error.message }, { status: 500 })
     }
 
     return NextResponse.json({ ok: true })
   } catch (err) {
-    console.error(err)
+    console.error('Unexpected error:', err)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }

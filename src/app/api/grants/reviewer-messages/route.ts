@@ -54,16 +54,19 @@ export async function POST(request: NextRequest) {
     let attachment_url: string | null = null
     let attachment_name: string | null = null
 
-    if (file) {
+    if (file && file.size > 0) {
       const ext = file.name.split('.').pop()
       const path = `grants/${application_id}/messages/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`
+      const arrayBuffer = await file.arrayBuffer()
+      const buffer = Buffer.from(arrayBuffer)
+
       const { error: uploadError } = await db().storage
         .from('grant-documents')
-        .upload(path, file, { contentType: file.type })
+        .upload(path, buffer, { contentType: file.type || 'application/octet-stream' })
 
       if (uploadError) {
-        console.error(uploadError)
-        return NextResponse.json({ error: 'File upload failed' }, { status: 500 })
+        console.error('Storage upload error:', uploadError)
+        return NextResponse.json({ error: `Upload failed: ${uploadError.message}` }, { status: 500 })
       }
 
       const { data: urlData } = db().storage.from('grant-documents').getPublicUrl(path)
