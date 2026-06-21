@@ -136,12 +136,18 @@ export default function ReviewerActions({ applicationId, currentStatus, requeste
         </div>
       )}
 
-      {/* Mark paid/closed (after approval) */}
+      {/* Post-approval actions */}
       {currentStatus === 'approved' && (
-        <button onClick={() => act('paid_closed')} disabled={!!loading}
-          className="text-sm px-4 py-2 bg-gray-100 text-gray-600 rounded-lg hover:bg-gray-200 disabled:opacity-50">
-          {loading === 'paid_closed' ? '…' : 'Mark Paid / Closed'}
-        </button>
+        <div className="flex gap-2">
+          <button onClick={() => act('paid_closed')} disabled={!!loading}
+            className="text-sm px-4 py-2 bg-gray-100 text-gray-600 rounded-lg hover:bg-gray-200 disabled:opacity-50">
+            {loading === 'paid_closed' ? '…' : 'Mark Paid / Closed'}
+          </button>
+          <button onClick={() => act('unapprove')} disabled={!!loading}
+            className="text-sm px-4 py-2 bg-amber-100 text-amber-700 rounded-lg hover:bg-amber-200 disabled:opacity-50">
+            {loading === 'unapprove' ? '…' : 'Unapprove'}
+          </button>
+        </div>
       )}
 
       {error && <p className="text-sm text-red-600">{error}</p>}

@@ -77,7 +77,7 @@ export default async function ReviewerApplicationPage({ params }: { params: Prom
     : app.social_workers
 
   const isCharitable = app.grant_type === 'charitable_children'
-  const isOpen = !['approved', 'denied', 'paid_closed'].includes(app.status)
+  const isOpen = !['denied', 'paid_closed'].includes(app.status)
 
   // Lifetime cap lookup for Charitable Children
   let lifetimeHistory: any[] = []
