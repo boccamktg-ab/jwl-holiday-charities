@@ -146,7 +146,7 @@ export default async function GrantApplicationPage({ params }: { params: Promise
           {documents.map((doc: any) => (
             <a
               key={doc.id}
-              href={doc.file_url}
+              href={`/api/grants/file?path=${encodeURIComponent(doc.file_url)}`}
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center gap-2 text-sm text-[#1B52C1] hover:underline"

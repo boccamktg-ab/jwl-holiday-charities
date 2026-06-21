@@ -207,7 +207,7 @@ export default async function ReviewerApplicationPage({ params }: { params: Prom
         <div className="bg-white border border-gray-200 rounded-xl p-6 space-y-3">
           <h2 className="text-sm font-semibold text-gray-700 uppercase tracking-wide">Documents</h2>
           {documents.map((doc: any) => (
-            <a key={doc.id} href={doc.file_url} target="_blank" rel="noopener noreferrer"
+            <a key={doc.id} href={`/api/grants/file?path=${encodeURIComponent(doc.file_url)}`} target="_blank" rel="noopener noreferrer"
               className="flex items-center gap-2 text-sm text-[#1B52C1] hover:underline">
               <span>📄</span><span>{doc.file_name}</span>
             </a>

@@ -67,8 +67,7 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ error: `Upload failed: ${uploadError.message}` }, { status: 500 })
       }
 
-      const { data: urlData } = admin.storage.from('grant-documents').getPublicUrl(path)
-      attachment_url = urlData.publicUrl
+      attachment_url = path
       attachment_name = file.name
     }
 

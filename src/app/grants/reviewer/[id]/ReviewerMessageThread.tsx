@@ -77,7 +77,7 @@ export default function ReviewerMessageThread({ applicationId, messages, current
                 {msg.body && <p>{msg.body}</p>}
                 {msg.attachment_url && (
                   <a
-                    href={msg.attachment_url}
+                    href={`/api/grants/file?path=${encodeURIComponent(msg.attachment_url)}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className={`flex items-center gap-1.5 text-xs underline ${isMe ? 'text-blue-200 hover:text-white' : 'text-[#1B52C1] hover:text-blue-700'}`}
