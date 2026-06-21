@@ -15,6 +15,10 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "JWL Portal",
   description: "Member portal for the Junior Welfare League of Huntington.",
+  icons: {
+    icon: "/jwl-logo.png",
+    apple: "/jwl-logo.png",
+  },
 };
 
 export default function RootLayout({
